@@ -48,6 +48,8 @@ group :development do
   # gem "spring"
 end
 
+gem 'dotenv-rails', groups: [:development, :test]
+
 gem "devise-jwt"
 
 gem "cancancan"
