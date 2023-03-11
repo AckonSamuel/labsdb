@@ -1,8 +1,10 @@
-require_relative "boot"
+# frozen_string_literal: true
 
-require "rails/all"
+require_relative 'boot'
 
-require "dotenv/rails-now"
+require 'rails/all'
+
+require 'dotenv/rails-now'
 
 # Require the gems listed in Gemfile, including any gems
 # you've limited to :test, :development, or :production.
