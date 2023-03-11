@@ -7,10 +7,10 @@ module Users
     def create
       user = User.create(user_params)
       if user.valid? && user.save
-        render json: admin, status: :created
+        render json: user, status: :created
         return
       end
-      render json: admin.errors, status: unprocessable_entity
+      render json: user.errors, status: unprocessable_entity
     end
 
     private
