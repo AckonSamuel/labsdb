@@ -5,6 +5,6 @@ class User < ApplicationRecord
   # :confirmable, :lockable, :timeoutable, :trackable and :omniauthable
 
   include Devise::JWT::RevocationStrategies::JTIMatcher
-  devise :database_authenticatable, :registerable, :validatable, :confirmable,
+  devise :database_authenticatable, :registerable, :validatable,
          :jwt_authenticatable, :recoverable, :rememberable, jwt_revocation_strategy: self
 end
