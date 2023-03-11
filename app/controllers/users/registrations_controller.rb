@@ -7,6 +7,7 @@ module Users
     def create
       user = User.create(user_params)
       if user.valid? && user.save
+        user.send_confirmation_instructions unless user.confirmed?
         render json: user, status: :created
         return
       end
