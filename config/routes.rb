@@ -1,6 +1,11 @@
 # frozen_string_literal: true
 
 Rails.application.routes.draw do
+  resources :categories
+  resources :vendors
+  resources :instrumentdetails
+  resources :labs
+  resources :instruments
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
 
   # Defines the root path route ("/")

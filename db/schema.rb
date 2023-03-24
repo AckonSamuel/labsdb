@@ -10,9 +10,50 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_03_09_194807) do
+ActiveRecord::Schema[7.0].define(version: 2023_03_20_215333) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
+
+  create_table "categories", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.string "category_name"
+    t.string "category_description"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  create_table "instrumentdetails", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.string "range"
+    t.string "resolution"
+    t.integer "accuracy"
+    t.uuid "instrument_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["instrument_id"], name: "index_instrumentdetails_on_instrument_id"
+  end
+
+  create_table "instruments", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.string "instrument_name"
+    t.integer "manufacturing_year"
+    t.integer "number_of_devices"
+    t.string "description"
+    t.integer "price"
+    t.string "model"
+    t.uuid "lab_id", null: false
+    t.uuid "vendor_id", null: false
+    t.uuid "category_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["category_id"], name: "index_instruments_on_category_id"
+    t.index ["lab_id"], name: "index_instruments_on_lab_id"
+    t.index ["vendor_id"], name: "index_instruments_on_vendor_id"
+  end
+
+  create_table "labs", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.string "lab_name"
+    t.string "lab_location"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
 
   create_table "users", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
     t.string "email", default: "", null: false
@@ -35,4 +76,18 @@ ActiveRecord::Schema[7.0].define(version: 2023_03_09_194807) do
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
   end
 
+  create_table "vendors", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.string "vendor_name"
+    t.string "location"
+    t.string "email"
+    t.string "website"
+    t.string "description"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  add_foreign_key "instrumentdetails", "instruments"
+  add_foreign_key "instruments", "categories"
+  add_foreign_key "instruments", "labs"
+  add_foreign_key "instruments", "vendors"
 end
