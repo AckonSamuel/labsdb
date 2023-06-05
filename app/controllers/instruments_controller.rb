@@ -1,11 +1,18 @@
-class InstrumentController < ApplicationController
+class InstrumentsController < ApplicationController
   before_action :set_instrument, only: %i[ show update destroy ]
 
   # GET /instrument
+  def superIndex
+    render json: Instrument.all
+  end
+  
   def index
-    @instrument = Instrument.all
+    page = params.fetch(:page, 1).to_i
+    per_page = params.fetch(:per_page, 5).to_i
 
-    render json: @instrument
+    instruments = Instrument.all.offset((page - 1) * per_page).limit(per_page)
+
+    render json: instruments
   end
 
   # GET /instrument/1
@@ -38,14 +45,11 @@ class InstrumentController < ApplicationController
     @instrument.destroy
   end
 
-  private
-    # Use callbacks to share common setup or constraints between actions.
-    def set_instrument
-      @instrument = Instrument.find(params[:id])
-    end
+  def set_instrument
+    @instrument = Instrument.find(params[:id])
+  end
 
-    # Only allow a list of trusted parameters through.
-    def instrument_params
-      params.require(:instrument).permit(:instrument_name, :manufacturing_year, :number_of_devices, :description, :price, :model)
-    end
+  def instrument_params
+    params.require(:instrument).permit(:instrument_name, :manufacturing_year, :number_of_devices, :description, :price, :model)
+  end
 end
