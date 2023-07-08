@@ -5,6 +5,7 @@ class CreateInstrumentdetails < ActiveRecord::Migration[7.0]
       t.string :resolution
       t.integer :accuracy
       t.references :instrument, null: false, foreign_key: true, type: :uuid
+      
       t.timestamps
     end
   end
