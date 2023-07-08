@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_03_20_215333) do
+ActiveRecord::Schema[7.0].define(version: 2023_07_06_200454) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -19,6 +19,24 @@ ActiveRecord::Schema[7.0].define(version: 2023_03_20_215333) do
     t.string "category_description"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+  end
+
+  create_table "instrument_categories", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.uuid "instrument_id", null: false
+    t.uuid "category_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["category_id"], name: "index_instrument_categories_on_category_id"
+    t.index ["instrument_id"], name: "index_instrument_categories_on_instrument_id"
+  end
+
+  create_table "instrument_labs", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.uuid "instrument_id", null: false
+    t.uuid "lab_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["instrument_id"], name: "index_instrument_labs_on_instrument_id"
+    t.index ["lab_id"], name: "index_instrument_labs_on_lab_id"
   end
 
   create_table "instrumentdetails", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
@@ -38,14 +56,8 @@ ActiveRecord::Schema[7.0].define(version: 2023_03_20_215333) do
     t.string "description"
     t.integer "price"
     t.string "model"
-    t.uuid "lab_id", null: false
-    t.uuid "vendor_id", null: false
-    t.uuid "category_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index ["category_id"], name: "index_instruments_on_category_id"
-    t.index ["lab_id"], name: "index_instruments_on_lab_id"
-    t.index ["vendor_id"], name: "index_instruments_on_vendor_id"
   end
 
   create_table "labs", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
@@ -86,8 +98,9 @@ ActiveRecord::Schema[7.0].define(version: 2023_03_20_215333) do
     t.datetime "updated_at", null: false
   end
 
+  add_foreign_key "instrument_categories", "categories"
+  add_foreign_key "instrument_categories", "instruments"
+  add_foreign_key "instrument_labs", "instruments"
+  add_foreign_key "instrument_labs", "labs"
   add_foreign_key "instrumentdetails", "instruments"
-  add_foreign_key "instruments", "categories"
-  add_foreign_key "instruments", "labs"
-  add_foreign_key "instruments", "vendors"
 end
