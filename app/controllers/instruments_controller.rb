@@ -23,6 +23,16 @@ class InstrumentsController < ApplicationController
   # POST /instrument
   def create
     @instrument = Instrument.new(instrument_params)
+    labs = params.fetch(:labs)
+    categories = params.fetch(:categories)
+    
+    labs.each do |lab|
+      @instrument.labs << Lab.find_by(id: lab)
+    end
+
+    categories.each do |category|
+      @instrument.categories << Category.find_by(id: category)
+    end
 
     if @instrument.save
       render json: @instrument, status: :created, location: @instrument
