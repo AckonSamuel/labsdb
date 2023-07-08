@@ -7,9 +7,7 @@ class CreateInstruments < ActiveRecord::Migration[7.0]
       t.string :description
       t.integer :price
       t.string :model
-      t.references :lab, null: false, foreign_key: true, type: :uuid
-      t.references :vendor, null: false, foreign_key: true, type: :uuid
-      t.references :category, null: false, foreign_key: true, type: :uuid
+
       t.timestamps
     end
   end
