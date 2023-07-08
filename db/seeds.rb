@@ -33,8 +33,5 @@ end
                     description: "Instrument #{i} description",
                     price: 1000 * i,
                     model: "model #{i}",
-                    lab_id: Lab.first.id,
-                    category_id: Category.first.id,
-                    vendor_id: Vendor.first.id,
     )
 end
