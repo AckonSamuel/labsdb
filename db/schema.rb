@@ -39,16 +39,6 @@ ActiveRecord::Schema[7.0].define(version: 2023_07_06_200454) do
     t.index ["lab_id"], name: "index_instrument_labs_on_lab_id"
   end
 
-  create_table "instrumentdetails", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
-    t.string "range"
-    t.string "resolution"
-    t.integer "accuracy"
-    t.uuid "instrument_id", null: false
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.index ["instrument_id"], name: "index_instrumentdetails_on_instrument_id"
-  end
-
   create_table "instruments", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
     t.string "instrument_name"
     t.integer "manufacturing_year"
@@ -56,6 +46,9 @@ ActiveRecord::Schema[7.0].define(version: 2023_07_06_200454) do
     t.string "description"
     t.integer "price"
     t.string "model"
+    t.string "range"
+    t.string "resolution"
+    t.integer "accuracy"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end
@@ -102,5 +95,4 @@ ActiveRecord::Schema[7.0].define(version: 2023_07_06_200454) do
   add_foreign_key "instrument_categories", "instruments"
   add_foreign_key "instrument_labs", "instruments"
   add_foreign_key "instrument_labs", "labs"
-  add_foreign_key "instrumentdetails", "instruments"
 end

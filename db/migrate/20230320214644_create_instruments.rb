@@ -7,6 +7,9 @@ class CreateInstruments < ActiveRecord::Migration[7.0]
       t.string :description
       t.integer :price
       t.string :model
+      t.string :range
+      t.string :resolution
+      t.integer :accuracy
 
       t.timestamps
     end

@@ -29,9 +29,11 @@ end
     Instrument.create(
                     instrument_name: "Instrument #{i}",
                     manufacturing_year: 2020 + i,
-                    number_of_devices: i,
                     description: "Instrument #{i} description",
                     price: 1000 * i,
                     model: "model #{i}",
+                    range: "#{i} to #{i + 1}",
+                    resolution: "#{i} to #{i + 1}",
+                    accuracy: i * 100,
     )
 end
