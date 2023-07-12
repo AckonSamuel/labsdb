@@ -43,10 +43,13 @@ class InstrumentsController < ApplicationController
 
   # PATCH/PUT /instrument/1
   def update
-    if @instrument.update(instrument_params)
-      render json: @instrument
+    update_instrument_photos if params[:instrument][:instrument_photos].present?
+    update_instrument_attributes if any_instrument_attribute_present?
+  
+    if @instrument.errors.empty?
+      render json: @instrument, status: :ok
     else
-      render json: @instrument.errors, status: :unprocessable_entity
+      render json: { errors: @instrument.errors.full_messages }, status: :unprocessable_entity
     end
   end
 
@@ -56,6 +59,23 @@ class InstrumentsController < ApplicationController
     ids.each do |item|
       Instrument.find_by(id: item).destroy
     end
+  end
+
+  private
+
+  def update_instrument_photos
+    params[:instrument][:instrument_photos].each do |_key, photo|
+      @instrument.instrument_photos.each(&:purge)
+      @instrument.instrument_photos.attach(photo)
+    end
+  end
+  
+  def any_instrument_attribute_present?
+    instrument_params.except(:instrument_photos, :categories, :labs).values.any?(&:present?)
+  end
+  
+  def update_instrument_attributes
+    @instrument.update(instrument_params.except(:instrument_photos, :categories, :labs))
   end
 
   def set_instrument
@@ -74,6 +94,7 @@ class InstrumentsController < ApplicationController
       :accuracy,
       categories: [],
       labs: [],
+      instrument_photos: [],
     )
   end
 
