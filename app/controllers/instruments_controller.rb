@@ -1,12 +1,7 @@
 class InstrumentsController < ApplicationController
-  before_action :set_instrument, only: %i[ show update ]
+  before_action :set_instrument, only: %i[show update destroy]
 
-  # GET /instrument
-  def superIndex
-    render json: Instrument.all
-  end
-  
-  def index
+  def super_index
     page = params.fetch(:page, 1).to_i
     per_page = params.fetch(:per_page, 5).to_i
 
@@ -15,37 +10,31 @@ class InstrumentsController < ApplicationController
     render json: instruments
   end
 
-  # GET /instrument/1
+  def index
+    instruments = Instrument.all
+    render json: instruments
+  end
+
   def show
     render json: @instrument
   end
 
-  # POST /instrument
   def create
+    @instrument = Instrument.new(instrument_params.except(:categories, :labs))
+    assign_categories_and_labs
 
-    @instrument = Instrument.create(instrument_params.except(:categories, :labs))
-  
-    params[:instrument][:labs].each do |lab|
-      @instrument.labs << Lab.find_by(id: lab)
-    end
-  
-    params[:instrument][:categories].each do |category|
-      @instrument.categories << Category.find_by(id: category)
-    end
-  
     if @instrument.save
       render json: @instrument, status: :created, location: @instrument
     else
       render json: { errors: @instrument.errors.full_messages }, status: :unprocessable_entity
     end
   end
-  
 
-  # PATCH/PUT /instrument/1
   def update
-    update_instrument_photos if params[:instrument][:instrument_photos].present?
+    update_instrument_photos if params.dig(:instrument, :instrument_photos).present?
     update_instrument_attributes if any_instrument_attribute_present?
-  
+    update_categories_and_labs
+
     if @instrument.errors.empty?
       render json: @instrument, status: :ok
     else
@@ -53,27 +42,33 @@ class InstrumentsController < ApplicationController
     end
   end
 
-  # DELETE /instrument/1
   def destroy
-    ids = params.fetch(:blacklist, [])
-    ids.each do |item|
-      Instrument.find_by(id: item).destroy
-    end
+    @instrument.destroy
   end
 
   private
 
+  def assign_categories_and_labs
+    @instrument.categories = Category.where(id: params.dig(:instrument, :categories))
+    @instrument.labs = Lab.where(id: params.dig(:instrument, :labs))
+  end
+
+  def update_categories_and_labs
+    @instrument.categories = Category.where(id: params.dig(:instrument, :categories)) if params.dig(:instrument, :categories).present?
+    @instrument.labs = Lab.where(id: params.dig(:instrument, :labs)) if params.dig(:instrument, :labs).present?
+  end
+
   def update_instrument_photos
-    params[:instrument][:instrument_photos].each do |_key, photo|
-      @instrument.instrument_photos.each(&:purge)
+    params.dig(:instrument, :instrument_photos).each do |_key, photo|
+      @instrument.instrument_photos.purge
       @instrument.instrument_photos.attach(photo)
     end
   end
-  
+
   def any_instrument_attribute_present?
     instrument_params.except(:instrument_photos, :categories, :labs).values.any?(&:present?)
   end
-  
+
   def update_instrument_attributes
     @instrument.update(instrument_params.except(:instrument_photos, :categories, :labs))
   end
@@ -84,7 +79,7 @@ class InstrumentsController < ApplicationController
 
   def instrument_params
     params.require(:instrument).permit(
-      :instrument_name, 
+      :instrument_name,
       :manufacturing_year,
       :model,
       :price,
@@ -94,11 +89,11 @@ class InstrumentsController < ApplicationController
       :accuracy,
       categories: [],
       labs: [],
-      instrument_photos: [],
-    )
+      instrument_photos: []
+    ).tap do |whitelisted|
+      whitelisted[:categories] = params[:instrument][:categories] if params[:instrument][:categories].present?
+      whitelisted[:labs] = params[:instrument][:labs] if params[:instrument][:labs].present?
+    end
   end
-
-  def delete_params
-    params.require(:instrument).permit(:blacklist, [])
-  end
+  
 end
