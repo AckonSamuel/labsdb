@@ -93,6 +93,7 @@ class InstrumentsController < ApplicationController
     ).tap do |whitelisted|
       whitelisted[:categories] = params[:instrument][:categories] if params[:instrument][:categories].present?
       whitelisted[:labs] = params[:instrument][:labs] if params[:instrument][:labs].present?
+      whitelisted[:instrument_photos] = params[:instrument][:instrument_photos] if params[:instrument][:instrument_photos].present?
     end
   end
   
